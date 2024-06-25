@@ -63,6 +63,9 @@
         <label for="vendas">Total de Vendas (R$):</label>
         <input type="number" id="vendas" placeholder="Digite o total de vendas">
 
+        <label for="nota">Nota do Consumidor:</label>
+        <input type="number" id="nota" placeholder="Digite a nota do consumidor">
+
         <label for="modelo">Modelo de Remuneração:</label>
         <select id="modelo">
             <option value="1">Modelo 1: Padrão R$ 98,00 e Campanha R$ 196,00</option>
@@ -86,22 +89,27 @@
         function calcularRemuneracao() {
             const meta = parseFloat(document.getElementById('meta').value);
             const vendas = parseFloat(document.getElementById('vendas').value);
+            const nota = parseFloat(document.getElementById('nota').value);
             const modelo = document.getElementById('modelo').value;
             const tipo = document.getElementById('tipo').value;
 
-            if (isNaN(meta) || isNaN(vendas)) {
+            if (isNaN(meta) || isNaN(vendas) || isNaN(nota)) {
                 document.getElementById('resultado').textContent = 'Por favor, preencha todos os campos corretamente.';
                 return;
             }
 
             let valorBase = 0;
+            let valorNota = 0;
 
             if (modelo === '1') {
                 valorBase = tipo === 'padrao' ? 98 : 196;
+                valorNota = tipo === 'padrao' ? 42 : 84;
             } else if (modelo === '2') {
                 valorBase = tipo === 'padrao' ? 140 : 280;
+                valorNota = tipo === 'padrao' ? 60 : 120;
             } else if (modelo === '3') {
                 valorBase = tipo === 'padrao' ? 210 : 420;
+                valorNota = tipo === 'padrao' ? 90 : 180;
             }
 
             const percentualMeta = (vendas / meta) * 100;
@@ -117,6 +125,10 @@
                 remuneracaoVariavel = (percentualMeta / 100) * valorBase;
             } else if (percentualMeta > 120) {
                 remuneracaoVariavel = 1.2 * valorBase;
+            }
+
+            if (nota >= 70) {
+                remuneracaoVariavel += valorNota;
             }
 
             document.getElementById('percentual').textContent = `Percentual da meta atingido: ${percentualMeta.toFixed(2)}%`;
