@@ -10,6 +10,7 @@
             margin: 0;
             padding: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -20,6 +21,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
         h1 {
             text-align: center;
@@ -51,6 +53,14 @@
         .result, .percentual {
             margin-top: 20px;
             font-weight: bold;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #f0f0f0;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
         }
     </style>
 </head>
@@ -84,6 +94,10 @@
         <div class="percentual" id="percentual"></div>
         <div class="result" id="resultado"></div>
     </div>
+
+    <footer>
+        Sistema Desenvolvido por Iago Camuzzi - Contato: 27 99763-5942
+    </footer>
 
     <script>
         function calcularRemuneracao() {
