@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Remuneração Variável</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result, .percentual {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Remuneração Variável</h1>
+        <label for="meta">Meta de Vendas (R$):</label>
+        <input type="number" id="meta" placeholder="Digite a meta de vendas">
+        
+        <label for="vendas">Total de Vendas (R$):</label>
+        <input type="number" id="vendas" placeholder="Digite o total de vendas">
+
+        <label for="modelo">Modelo de Remuneração:</label>
+        <select id="modelo">
+            <option value="1">Modelo 1: Padrão R$ 98,00 e Campanha R$ 196,00</option>
+            <option value="2">Modelo 2: Padrão R$ 140,00 e Campanha R$ 280,00</option>
+            <option value="3">Modelo 3: Padrão R$ 210,00 e Campanha R$ 420,00</option>
+        </select>
+
+        <label for="tipo">Tipo de Remuneração:</label>
+        <select id="tipo">
+            <option value="padrao">Padrão</option>
+            <option value="campanha">Campanha</option>
+        </select>
+
+        <button onclick="calcularRemuneracao()">Calcular</button>
+
+        <div class="percentual" id="percentual"></div>
+        <div class="result" id="resultado"></div>
+    </div>
+
+    <script>
+        function calcularRemuneracao() {
+            const meta = parseFloat(document.getElementById('meta').value);
+            const vendas = parseFloat(document.getElementById('vendas').value);
+            const modelo = document.getElementById('modelo').value;
+            const tipo = document.getElementById('tipo').value;
+
+            if (isNaN(meta) || isNaN(vendas)) {
+                document.getElementById('resultado').textContent = 'Por favor, preencha todos os campos corretamente.';
+                return;
+            }
+
+            let valorBase = 0;
+
+            if (modelo === '1') {
+                valorBase = tipo === 'padrao' ? 98 : 196;
+            } else if (modelo === '2') {
+                valorBase = tipo === 'padrao' ? 140 : 280;
+            } else if (modelo === '3') {
+                valorBase = tipo === 'padrao' ? 210 : 420;
+            }
+
+            const percentualMeta = (vendas / meta) * 100;
+            let remuneracaoVariavel = 0;
+
+            if (percentualMeta < 92) {
+                remuneracaoVariavel = 0;
+            } else if (percentualMeta >= 92 && percentualMeta < 100) {
+                remuneracaoVariavel = valorBase / 2;
+            } else if (percentualMeta >= 100 && percentualMeta <= 104.99) {
+                remuneracaoVariavel = valorBase;
+            } else if (percentualMeta > 104.99 && percentualMeta <= 120) {
+                remuneracaoVariavel = (percentualMeta / 100) * valorBase;
+            } else if (percentualMeta > 120) {
+                remuneracaoVariavel = 1.2 * valorBase;
+            }
+
+            document.getElementById('percentual').textContent = `Percentual da meta atingido: ${percentualMeta.toFixed(2)}%`;
+            document.getElementById('resultado').textContent = `A remuneração variável é R$ ${remuneracaoVariavel.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>
