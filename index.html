@@ -1,1 +1,169 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Remuneração Variável</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result, .percentual {
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1em;
+            color: #333;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 0.8em;
+            color: #777;
+            width: 100%;
+            background-color: #f5f5f5;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Remuneração Variável</h1>
+        <label for="meta">Meta de Vendas (R$):</label>
+        <input type="number" id="meta" placeholder="Digite a meta de vendas" inputmode="numeric" pattern="[0-9]*">
+        
+        <label for="vendas">Total de Vendas (R$):</label>
+        <input type="number" id="vendas" placeholder="Digite o total de vendas" inputmode="numeric" pattern="[0-9]*">
+
+        <label for="nota">Nota do Consumidor:</label>
+        <input type="number" id="nota" placeholder="Digite a nota do consumidor" inputmode="numeric" pattern="[0-9]*">
+
+        <label for="modelo">Modelo de Remuneração:</label>
+        <select id="modelo">
+            <option value="1">Modelo 1: Padrão R$ 98,00 e Campanha R$ 196,00</option>
+            <option value="2">Modelo 2: Padrão R$ 140,00 e Campanha R$ 280,00</option>
+            <option value="3">Modelo 3: Padrão R$ 210,00 e Campanha R$ 420,00</option>
+        </select>
+
+        <label for="tipo">Tipo de Remuneração:</label>
+        <select id="tipo">
+            <option value="padrao">Padrão</option>
+            <option value="campanha">Campanha</option>
+        </select>
+
+        <button onclick="calcularRemuneracao()">Calcular</button>
+
+        <div class="percentual" id="percentual"></div>
+        <div class="result" id="resultado"></div>
+    </div>
+
+    <footer>
+        Sistema Desenvolvido por Iago Camuzzi<br>Contato: (27) 99763-5942
+    </footer>
+
+    <script>
+        function calcularRemuneracao() {
+            const meta = parseFloat(document.getElementById('meta').value);
+            const vendas = parseFloat(document.getElementById('vendas').value);
+            const nota = parseFloat(document.getElementById('nota').value);
+            const modelo = document.getElementById('modelo').value;
+            const tipo = document.getElementById('tipo').value;
+
+            if (isNaN(meta) || isNaN(vendas) || isNaN(nota)) {
+                document.getElementById('resultado').textContent = 'Por favor, preencha todos os campos corretamente.';
+                return;
+            }
+
+            let valorBase = 0;
+            let valorNota = 0;
+
+            if (modelo === '1') {
+                valorBase = tipo === 'padrao' ? 98 : 196;
+                valorNota = tipo === 'padrao' ? 42 : 84;
+            } else if (modelo === '2') {
+                valorBase = tipo === 'padrao' ? 140 : 280;
+                valorNota = tipo === 'padrao' ? 60 : 120;
+            } else if (modelo === '3') {
+                valorBase = tipo === 'padrao' ? 210 : 420;
+                valorNota = tipo === 'padrao' ? 90 : 180;
+            }
+
+            const percentualMeta = (vendas / meta) * 100;
+            let remuneracaoVariavel = 0;
+
+            if (percentualMeta < 92) {
+                remuneracaoVariavel = 0;
+            } else if (percentualMeta >= 92 && percentualMeta < 100) {
+                remuneracaoVariavel = valorBase / 2;
+            } else if (percentualMeta >= 100 && percentualMeta <= 104.99) {
+                remuneracaoVariavel = valorBase;
+            } else if (percentualMeta > 104.99 && percentualMeta <= 120) {
+                remuneracaoVariavel = (percentualMeta / 100) * valorBase;
+            } else if (percentualMeta > 120) {
+                remuneracaoVariavel = 1.2 * valorBase;
+            }
+
+            if (nota >= 70) {
+                remuneracaoVariavel += valorNota;
+            }
+
+            document.getElementById('percentual').textContent = `Percentual da meta atingido: ${percentualMeta.toFixed(2)}%`;
+            document.getElementById('resultado').textContent = `A remuneração variável é R$ ${remuneracaoVariavel.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>
