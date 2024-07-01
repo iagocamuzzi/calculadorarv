@@ -3,166 +3,450 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Remuneração Variável</title>
+    <title>Recebimento de Produtos</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f5f5f5;
-            box-sizing: border-box;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
         .container {
-            background-color: #fff;
-            padding: 20px 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 400px;
-            box-sizing: border-box;
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         h1 {
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.5em;
             color: #333;
+            font-size: 24px;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 0.9em;
-            color: #555;
+        .file-input {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1em;
-            box-sizing: border-box;
+        .file-input input {
+            display: none;
         }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007BFF;
-            color: white;
+        .file-input label,
+        .file-input button {
+            padding: 15px 25px;
+            margin: 5px;
+            background-color: #007bff;
+            color: #fff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 1em;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .result, .percentual {
-            margin-top: 20px;
-            font-weight: bold;
-            text-align: center;
-            font-size: 1em;
-            color: #333;
-        }
-        footer {
-            text-align: center;
-            padding: 10px;
-            font-size: 0.8em;
-            color: #777;
             width: 100%;
-            background-color: #f5f5f5;
+            max-width: 300px;
+            text-align: center;
+            font-size: 18px;
+        }
+        .file-input button {
+            background-color: #28a745;
+        }
+        .scanner-container {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #interactive {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
             margin-top: 20px;
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+        #interactive video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: auto;
+            transform: translate(-50%, -50%);
+        }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .overlay-rect {
+            border: 2px dashed red;
+            width: 80%;
+            height: 30%;
+            box-sizing: border-box;
+            pointer-events: none;
+        }
+        .overlay-line {
+            width: 100%;
+            height: 2px;
+            background-color: red;
+            pointer-events: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            font-size: 18px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .count-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .count-container input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 18px;
+            padding: 5px;
+        }
+        .count-container button {
+            padding: 10px 15px;
+            margin: 0 5px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .error {
+            background-color: #f8d7da !important;
+        }
+        .success {
+            background-color: #d4edda;
+        }
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .submit-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .center {
+            text-align: center;
+        }
+        .log-container {
+            max-width: 800px;
+            margin: auto;
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .log {
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            th, td {
+                padding: 10px;
+            }
+            .file-input label,
+            .file-input button,
+            .count-container button {
+                padding: 10px 15px;
+                margin: 3px;
+                font-size: 16px;
+            }
+            .count-container input {
+                width: 50px;
+                font-size: 16px;
+            }
+            .submit-btn {
+                padding: 10px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            th, td {
+                padding: 8px;
+                font-size: 14px;
+            }
+            .file-input label,
+            .file-input button,
+            .count-container button {
+                padding: 8px 10px;
+                margin: 2px;
+                font-size: 14px;
+            }
+            .count-container input {
+                width: 40px;
+                font-size: 14px;
+            }
+            .submit-btn {
+                padding: 8px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Calculadora de Remuneração Variável</h1>
-        <label for="meta">Meta de Vendas (R$):</label>
-        <input type="number" id="meta" placeholder="Digite a meta de vendas" inputmode="numeric" pattern="[0-9]*">
-        
-        <label for="vendas">Total de Vendas (R$):</label>
-        <input type="number" id="vendas" placeholder="Digite o total de vendas" inputmode="numeric" pattern="[0-9]*">
 
-        <label for="nota">Nota do Consumidor:</label>
-        <input type="number" id="nota" placeholder="Digite a nota do consumidor" inputmode="numeric" pattern="[0-9]*">
-
-        <label for="modelo">Modelo de Remuneração:</label>
-        <select id="modelo">
-            <option value="1">Modelo 1: Padrão R$ 98,00 e Campanha R$ 196,00</option>
-            <option value="2">Modelo 2: Padrão R$ 140,00 e Campanha R$ 280,00</option>
-            <option value="3">Modelo 3: Padrão R$ 210,00 e Campanha R$ 420,00</option>
-        </select>
-
-        <label for="tipo">Tipo de Remuneração:</label>
-        <select id="tipo">
-            <option value="padrao">Padrão</option>
-            <option value="campanha">Campanha</option>
-        </select>
-
-        <button onclick="calcularRemuneracao()">Calcular</button>
-
-        <div class="percentual" id="percentual"></div>
-        <div class="result" id="resultado"></div>
+<div class="container">
+    <h1>Recebimento de Produtos</h1>
+    <div class="file-input">
+        <input type="file" id="xmlFile" accept=".xml">
+        <label for="xmlFile">Selecionar XML</label>
+        <button onclick="loadXML()">Carregar XML</button>
     </div>
+    <div class="scanner-container">
+        <button onclick="startScanner()">Escanear Código</button>
+        <div id="interactive" class="viewport">
+            <div class="overlay">
+                <div class="overlay-rect">
+                    <div class="overlay-line"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table id="productsTable">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Produto</th>
+                <th class="center">Caixas</th>
+                <th class="center">Contagem</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Os dados dos produtos serão inseridos aqui via JavaScript -->
+        </tbody>
+    </table>
+    <button class="submit-btn" onclick="submitConfirmation()">Confirmar Recebimento</button>
+</div>
+<div class="log-container">
+    <h2>Logs</h2>
+    <div id="log" class="log"></div>
+</div>
 
-    <footer>
-        Sistema Desenvolvido por Iago Camuzzi<br>Contato: (27) 99763-5942
-    </footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let lastScannedCode = null;
 
-    <script>
-        function calcularRemuneracao() {
-            const meta = parseFloat(document.getElementById('meta').value);
-            const vendas = parseFloat(document.getElementById('vendas').value);
-            const nota = parseFloat(document.getElementById('nota').value);
-            const modelo = document.getElementById('modelo').value;
-            const tipo = document.getElementById('tipo').value;
+        function log(message) {
+            const logElement = document.getElementById('log');
+            logElement.textContent += message + '\n';
+        }
 
-            if (isNaN(meta) || isNaN(vendas) || isNaN(nota)) {
-                document.getElementById('resultado').textContent = 'Por favor, preencha todos os campos corretamente.';
+        function loadXML() {
+            const fileInput = document.getElementById('xmlFile');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("Por favor, selecione um arquivo XML primeiro.");
                 return;
             }
 
-            let valorBase = 0;
-            let valorNota = 0;
-
-            if (modelo === '1') {
-                valorBase = tipo === 'padrao' ? 98 : 196;
-                valorNota = tipo === 'padrao' ? 42 : 84;
-            } else if (modelo === '2') {
-                valorBase = tipo === 'padrao' ? 140 : 280;
-                valorNota = tipo === 'padrao' ? 60 : 120;
-            } else if (modelo === '3') {
-                valorBase = tipo === 'padrao' ? 210 : 420;
-                valorNota = tipo === 'padrao' ? 90 : 180;
-            }
-
-            const percentualMeta = (vendas / meta) * 100;
-            let remuneracaoVariavel = 0;
-
-            if (percentualMeta < 92) {
-                remuneracaoVariavel = 0;
-            } else if (percentualMeta >= 92 && percentualMeta < 100) {
-                remuneracaoVariavel = valorBase / 2;
-            } else if (percentualMeta >= 100 && percentualMeta <= 104.99) {
-                remuneracaoVariavel = valorBase;
-            } else if (percentualMeta > 104.99 && percentualMeta <= 120) {
-                remuneracaoVariavel = (percentualMeta / 100) * valorBase;
-            } else if (percentualMeta > 120) {
-                remuneracaoVariavel = 1.2 * valorBase;
-            }
-
-            if (nota >= 70) {
-                remuneracaoVariavel += valorNota;
-            }
-
-            document.getElementById('percentual').textContent = `Percentual da meta atingido: ${percentualMeta.toFixed(2)}%`;
-            document.getElementById('resultado').textContent = `A remuneração variável é R$ ${remuneracaoVariavel.toFixed(2)}`;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(e.target.result, 'text/xml');
+                parseXML(xmlDoc);
+            };
+            reader.readAsText(file);
         }
-    </script>
+
+        function parseXML(xmlDoc) {
+            const products = xmlDoc.getElementsByTagName('prod'); // Alterar conforme a estrutura do XML
+
+            const tableBody = document.getElementById('productsTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+
+            Array.from(products).forEach(product => {
+                const row = tableBody.insertRow();
+
+                const codeCell = row.insertCell(0);
+                const nameCell = row.insertCell(1);
+                const quantityCell = row.insertCell(2);
+                const countCell = row.insertCell(3);
+
+                const productCode = removeLeadingZeros(product.getElementsByTagName('cProd')[0].textContent); // Alterar conforme a estrutura do XML
+                codeCell.textContent = productCode;
+                nameCell.textContent = product.getElementsByTagName('xProd')[0].textContent; // Alterar conforme a estrutura do XML
+                quantityCell.textContent = product.getElementsByTagName('qCom')[0].textContent; // Alterar conforme a estrutura do XML
+
+                const countContainer = document.createElement('div');
+                countContainer.classList.add('count-container');
+
+                const minusButton = document.createElement('button');
+                minusButton.textContent = '-';
+                minusButton.onclick = () => changeCount(countInput, -1);
+
+                const countInput = document.createElement('input');
+                countInput.type = 'number';
+                countInput.min = '0';
+                countInput.value = '0';
+                countInput.readOnly = true;
+
+                const plusButton = document.createElement('button');
+                plusButton.textContent = '+';
+                plusButton.onclick = () => changeCount(countInput, 1);
+
+                countContainer.appendChild(minusButton);
+                countContainer.appendChild(countInput);
+                countContainer.appendChild(plusButton);
+                countCell.appendChild(countContainer);
+
+                // Adiciona classe de erro se necessário
+                row.classList.add('product-row');
+            });
+        }
+
+        function removeLeadingZeros(str) {
+            return str.replace(/^0+/, '');
+        }
+
+        function changeCount(input, increment) {
+            let currentValue = parseInt(input.value);
+            currentValue += increment;
+            if (currentValue < 0) currentValue = 0;
+            input.value = currentValue;
+        }
+
+        function submitConfirmation() {
+            const rows = document.querySelectorAll('.product-row');
+            let allCorrect = true;
+
+            rows.forEach(row => {
+                const quantity = parseInt(row.cells[2].textContent);
+                const count = parseInt(row.cells[3].querySelector('input').value);
+
+                if (quantity !== count) {
+                    row.classList.add('error');
+                    row.classList.remove('success');
+                    allCorrect = false;
+                } else {
+                    row.classList.add('success');
+                    row.classList.remove('error');
+                }
+            });
+
+            if (allCorrect) {
+                alert('Todos os produtos foram confirmados com a quantidade correta.');
+            } else {
+                alert('Existem produtos com quantidades incorretas. Por favor, verifique.');
+            }
+        }
+
+        function playBeep() {
+            const audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
+            audio.play().catch(error => console.log('Erro ao tocar o som:', error));
+        }
+
+        function startScanner() {
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#interactive'),    // Or '#yourElement' (optional)
+                    constraints: {
+                        facingMode: "environment"
+                    }
+                },
+                locator: {
+                    patchSize: "medium",
+                    halfSample: true
+                },
+                decoder: {
+                    readers: [
+                        "ean_reader",
+                        "code_128_reader",
+                        "code_39_reader"
+                    ]
+                },
+                locate: true
+            }, function (err) {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                console.log("Initialization finished. Ready to start");
+                Quagga.start();
+            });
+
+            Quagga.onDetected(function(data) {
+                const code = data.codeResult.code;
+                if (code !== lastScannedCode) {
+                    log("Código detectado: " + code);
+                    updateCountForCode(code);
+                    lastScannedCode = code;
+                }
+            });
+        }
+
+        function updateCountForCode(code) {
+            const rows = document.querySelectorAll('.product-row');
+            let codeFound = false;
+
+            log("Buscando código: " + code);
+            rows.forEach(row => {
+                const cellCode = row.cells[0].textContent.trim();
+                log("Comparando com: " + cellCode);
+                if (cellCode === code) {
+                    const countInput = row.cells[3].querySelector('input');
+                    changeCount(countInput, 1);
+                    playBeep();
+                    codeFound = true;
+                }
+            });
+
+            if (!codeFound) {
+                log("Código não encontrado na lista de produtos.");
+                playBeep(); // Play beep for error
+                setTimeout(() => {
+                    alert("Código não pertence à nota fiscal.");
+                }, 100);
+            }
+        }
+
+        // Attach functions to window object to make them accessible in HTML
+        window.loadXML = loadXML;
+        window.startScanner = startScanner;
+        window.submitConfirmation = submitConfirmation;
+    });
+</script>
+
 </body>
 </html>
