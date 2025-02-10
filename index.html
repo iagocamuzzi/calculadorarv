@@ -70,7 +70,7 @@
             color: #333;
         }
         #exportarPDF {
-            display: none; /* Escondido até que o cálculo seja feito */
+            display: none;
             background-color: #28a745;
         }
         #exportarPDF:hover {
@@ -145,18 +145,16 @@
                                              (tipo === 'padrao' ? 90 : 180);
 
             const percentualMeta = (vendas / meta) * 100;
-            let remuneracaoVariavel = percentualMeta < 92 ? 0 :
+            let valorMeta = percentualMeta < 92 ? 0 :
                 percentualMeta < 100 ? valorBase / 2 :
                 percentualMeta <= 104.99 ? valorBase :
                 percentualMeta <= 120 ? (percentualMeta / 100) * valorBase :
                 1.2 * valorBase;
 
-            if (nota >= 70) {
-                remuneracaoVariavel += valorNota;
-            }
+            let valorFinal = valorMeta + (nota >= 70 ? valorNota : 0);
 
             document.getElementById('percentual').textContent = `Percentual da meta atingido: ${percentualMeta.toFixed(2)}%`;
-            document.getElementById('resultado').textContent = `A remuneração variável é R$ ${remuneracaoVariavel.toFixed(2)}`;
+            document.getElementById('resultado').textContent = `A remuneração variável é R$ ${valorFinal.toFixed(2)}`;
             
             document.getElementById('exportarPDF').style.display = 'block';
         }
@@ -165,17 +163,15 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            const meta = document.getElementById('meta').value;
-            const vendas = document.getElementById('vendas').value;
-            const nota = document.getElementById('nota').value;
-            const remuneracao = document.getElementById('resultado').textContent;
-
             doc.setFont("helvetica", "bold");
-            doc.text("Relatório de Remuneração", 20, 20);
+            doc.setFillColor(240, 240, 240);
+            doc.rect(10, 10, 190, 40, "F");
+            doc.text("📊 Relatório de Remuneração 📊", 15, 25);
+            
             doc.autoTable({
-                startY: 30,
-                head: [['Meta (R$)', 'Vendido (R$)', 'Nota', 'Remuneração (R$)']],
-                body: [[meta, vendas, nota, remuneracao.replace('A remuneração variável é R$ ', '')]]
+                startY: 50,
+                head: [['Meta (R$)', 'Vendido (R$)', 'Nota', 'Meta (R$)', 'Nota (R$)', 'Total']],
+                body: [[document.getElementById('meta').value, document.getElementById('vendas').value, document.getElementById('nota').value, "R$ " + valorMeta.toFixed(2), "R$ " + valorNota.toFixed(2), "R$ " + valorFinal.toFixed(2)]]
             });
 
             doc.save("relatorio-remuneracao.pdf");
