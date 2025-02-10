@@ -166,19 +166,12 @@
             const doc = new jsPDF();
 
             doc.setFont("helvetica", "bold");
-            doc.text("📊 Relatório de Remuneração 📊", 20, 20);
+            doc.text("Relatório de Remuneração Variável", 20, 20);
 
             doc.autoTable({
                 startY: 30,
                 head: [['Meta (R$)', 'Vendido (R$)', 'Nota', 'Valor Meta (R$)', 'Valor Nota (R$)', 'Total (R$)']],
-                body: [[
-                    document.getElementById('meta').value, 
-                    document.getElementById('vendas').value, 
-                    document.getElementById('nota').value, 
-                    `R$ ${valorMeta.toFixed(2)}`, 
-                    `R$ ${valorNota.toFixed(2)}`, 
-                    `R$ ${valorFinal.toFixed(2)}`
-                ]]
+                body: [[document.getElementById('meta').value, document.getElementById('vendas').value, document.getElementById('nota').value, `R$ ${valorMeta.toFixed(2)}`, `R$ ${valorNota.toFixed(2)}`, `R$ ${valorFinal.toFixed(2)}`]]
             });
 
             doc.save("relatorio-remuneracao.pdf");
