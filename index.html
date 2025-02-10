@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Remuneração Variável</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -171,11 +172,11 @@
 
             doc.setFont("helvetica", "bold");
             doc.text("Relatório de Remuneração", 20, 20);
-            doc.setFont("helvetica", "normal");
-            doc.text(`Meta de Vendas: R$ ${meta}`, 20, 40);
-            doc.text(`Total Vendido: R$ ${vendas}`, 20, 50);
-            doc.text(`Nota do Consumidor: ${nota}`, 20, 60);
-            doc.text(remuneracao, 20, 70);
+            doc.autoTable({
+                startY: 30,
+                head: [['Meta (R$)', 'Vendido (R$)', 'Nota', 'Remuneração (R$)']],
+                body: [[meta, vendas, nota, remuneracao.replace('A remuneração variável é R$ ', '')]]
+            });
 
             doc.save("relatorio-remuneracao.pdf");
         }
