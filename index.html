@@ -115,7 +115,6 @@
         <button onclick="calcularRemuneracao()">Calcular</button>
         <button id="exportarPDF" onclick="gerarPDF()">Exportar PDF</button>
 
-        <div class="percentual" id="percentual"></div>
         <div class="result" id="resultado"></div>
     </div>
 
@@ -135,11 +134,6 @@
             const modelo = document.getElementById('modelo').value;
             const tipo = document.getElementById('tipo').value;
 
-            if (isNaN(meta) || isNaN(vendas) || isNaN(nota)) {
-                document.getElementById('resultado').textContent = 'Por favor, preencha todos os campos corretamente.';
-                return;
-            }
-
             let valorBase = modelo === '1' ? (tipo === 'padrao' ? 98 : 196) :
                             modelo === '2' ? (tipo === 'padrao' ? 140 : 280) :
                                              (tipo === 'padrao' ? 210 : 420);
@@ -151,9 +145,9 @@
             percentualMeta = (vendas / meta) * 100;
             percentualNota = (nota / 100) * 100;
 
-            if (percentualMeta < 95) {
+            if (percentualMeta < 92) {
                 valorMeta = 0;
-                mensagemMeta = "Meta de Vendas não atingida";
+                mensagemMeta = "Meta não atingida";
             } else {
                 mensagemMeta = "";
                 valorMeta = percentualMeta < 100 ? valorBase / 2 :
@@ -170,10 +164,6 @@
             }
 
             valorFinal = valorMeta + valorNota;
-
-            document.getElementById('percentual').textContent = `Percentual da meta atingido: ${percentualMeta.toFixed(2)}% | Percentual da nota: ${percentualNota.toFixed(2)}%`;
-            document.getElementById('resultado').textContent = `A remuneração variável é R$ ${valorFinal.toFixed(2)}`;
-            
             document.getElementById('exportarPDF').style.display = 'block';
         }
 
@@ -183,11 +173,16 @@
 
             doc.setFont("helvetica", "bold");
             doc.text("Relatório de Remuneração Variável", 20, 20);
-            doc.text(`Meta: ${mensagemMeta || "R$ " + valorMeta.toFixed(2)}`, 20, 40);
-            doc.text(`Nota: ${mensagemNota || "R$ " + valorNota.toFixed(2)}`, 20, 50);
-            doc.text(`Percentual de Meta: ${percentualMeta.toFixed(2)}%`, 20, 60);
-            doc.text(`Percentual da Nota: ${percentualNota.toFixed(2)}%`, 20, 70);
-            doc.text(`Remuneração Total: R$ ${valorFinal.toFixed(2)}`, 20, 80);
+            
+            const yStart = 40;
+            doc.roundedRect(15, yStart, 180, 15, 5, 5, 'F');
+            doc.text(`Meta Atingida: ${percentualMeta.toFixed(2)}%`, 20, yStart + 10);
+
+            doc.roundedRect(15, yStart + 20, 180, 15, 5, 5, 'F');
+            doc.text(`Nota Atingida: ${percentualNota.toFixed(2)}%`, 20, yStart + 30);
+
+            doc.roundedRect(15, yStart + 40, 180, 15, 5, 5, 'F');
+            doc.text(`Remuneração Total: R$ ${valorFinal.toFixed(2)}`, 20, yStart + 50);
 
             doc.save("relatorio-remuneracao.pdf");
         }
