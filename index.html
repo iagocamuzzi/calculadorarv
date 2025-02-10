@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Remuneração Variável</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -62,12 +62,19 @@
         button:hover {
             background-color: #0056b3;
         }
-        .result, .percentual {
+        .result {
             margin-top: 20px;
             font-weight: bold;
             text-align: center;
             font-size: 1em;
             color: #333;
+        }
+        #exportarPDF {
+            display: none;
+            background-color: #28a745;
+        }
+        #exportarPDF:hover {
+            background-color: #218838;
         }
         footer {
             text-align: center;
@@ -84,13 +91,13 @@
     <div class="container">
         <h1>Calculadora de Remuneração Variável</h1>
         <label for="meta">Meta de Vendas (R$):</label>
-        <input type="number" id="meta" placeholder="Digite a meta de vendas" inputmode="numeric" pattern="[0-9]*">
-        
+        <input type="number" id="meta" placeholder="Digite a meta de vendas" inputmode="numeric">
+
         <label for="vendas">Total de Vendas (R$):</label>
-        <input type="number" id="vendas" placeholder="Digite o total de vendas" inputmode="numeric" pattern="[0-9]*">
+        <input type="number" id="vendas" placeholder="Digite o total de vendas" inputmode="numeric">
 
         <label for="nota">Nota do Consumidor:</label>
-        <input type="number" id="nota" placeholder="Digite a nota do consumidor" inputmode="numeric" pattern="[0-9]*">
+        <input type="number" id="nota" placeholder="Digite a nota do consumidor" inputmode="numeric">
 
         <label for="modelo">Modelo de Remuneração:</label>
         <select id="modelo">
@@ -106,8 +113,8 @@
         </select>
 
         <button onclick="calcularRemuneracao()">Calcular</button>
+        <button id="exportarPDF" onclick="gerarPDF()">Exportar PDF</button>
 
-        <div class="percentual" id="percentual"></div>
         <div class="result" id="resultado"></div>
     </div>
 
@@ -116,6 +123,9 @@
     </footer>
 
     <script>
+        let valorMeta = 0, valorNota = 0, valorFinal = 0;
+        let percentualMeta = 0, percentualNota = 0;
+
         function calcularRemuneracao() {
             const meta = parseFloat(document.getElementById('meta').value);
             const vendas = parseFloat(document.getElementById('vendas').value);
@@ -123,46 +133,57 @@
             const modelo = document.getElementById('modelo').value;
             const tipo = document.getElementById('tipo').value;
 
-            if (isNaN(meta) || isNaN(vendas) || isNaN(nota)) {
-                document.getElementById('resultado').textContent = 'Por favor, preencha todos os campos corretamente.';
-                return;
+            let valorBase = modelo === '1' ? (tipo === 'padrao' ? 98 : 196) :
+                            modelo === '2' ? (tipo === 'padrao' ? 140 : 280) :
+                                             (tipo === 'padrao' ? 210 : 420);
+
+            valorNota = modelo === '1' ? (tipo === 'padrao' ? 42 : 84) :
+                        modelo === '2' ? (tipo === 'padrao' ? 60 : 120) :
+                                         (tipo === 'padrao' ? 90 : 180);
+
+            percentualMeta = (vendas / meta) * 100;
+            percentualNota = (nota / 100) * 100;
+
+            valorMeta = percentualMeta < 95 ? 0 :
+                        percentualMeta < 100 ? valorBase / 2 :
+                        percentualMeta <= 104.99 ? valorBase :
+                        percentualMeta <= 120 ? (percentualMeta / 100) * valorBase :
+                        1.2 * valorBase;
+
+            if (nota < 70) {
+                valorNota = 0;
             }
 
-            let valorBase = 0;
-            let valorNota = 0;
+            valorFinal = valorMeta + valorNota;
+            document.getElementById('exportarPDF').style.display = 'block';
+        }
 
-            if (modelo === '1') {
-                valorBase = tipo === 'padrao' ? 98 : 196;
-                valorNota = tipo === 'padrao' ? 42 : 84;
-            } else if (modelo === '2') {
-                valorBase = tipo === 'padrao' ? 140 : 280;
-                valorNota = tipo === 'padrao' ? 60 : 120;
-            } else if (modelo === '3') {
-                valorBase = tipo === 'padrao' ? 210 : 420;
-                valorNota = tipo === 'padrao' ? 90 : 180;
+        function gerarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFont("helvetica", "bold");
+            doc.text("Relatório de Remuneração Variável", 20, 20);
+
+            const colors = [[220, 220, 220], [230, 240, 250], [240, 230, 220], [255, 240, 200], [200, 230, 200]];
+            const labels = [
+                `Meta Atingida: ${percentualMeta.toFixed(2)}%`,
+                `Nota Atingida: ${percentualNota.toFixed(2)}%`,
+                `Valor da Meta: R$ ${valorMeta.toFixed(2)}`,
+                `Valor da Nota: R$ ${valorNota.toFixed(2)}`,
+                `Remuneração Total: R$ ${valorFinal.toFixed(2)}`
+            ];
+
+            let yPosition = 40;
+            for (let i = 0; i < labels.length; i++) {
+                doc.setFillColor(...colors[i]);
+                doc.roundedRect(15, yPosition, 180, 15, 5, 5, 'F');
+                doc.setTextColor(0);
+                doc.text(labels[i], 20, yPosition + 10);
+                yPosition += 20;
             }
 
-            const percentualMeta = (vendas / meta) * 100;
-            let remuneracaoVariavel = 0;
-
-            if (percentualMeta < 95) {
-                remuneracaoVariavel = 0;
-            } else if (percentualMeta >= 95 && percentualMeta < 100) {
-                remuneracaoVariavel = valorBase / 2;
-            } else if (percentualMeta >= 100 && percentualMeta <= 104.99) {
-                remuneracaoVariavel = valorBase;
-            } else if (percentualMeta > 104.99 && percentualMeta <= 120) {
-                remuneracaoVariavel = (percentualMeta / 100) * valorBase;
-            } else if (percentualMeta > 120) {
-                remuneracaoVariavel = 1.2 * valorBase;
-            }
-
-            if (nota >= 70) {
-                remuneracaoVariavel += valorNota;
-            }
-
-            document.getElementById('percentual').textContent = `Percentual da meta atingido: ${percentualMeta.toFixed(2)}%`;
-            document.getElementById('resultado').textContent = `A remuneração variável é R$ ${remuneracaoVariavel.toFixed(2)}`;
+            doc.save("relatorio-remuneracao.pdf");
         }
     </script>
 </body>
