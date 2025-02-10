@@ -168,11 +168,14 @@
             doc.setFont("helvetica", "bold");
             doc.text("Relatório de Remuneração Variável", 20, 20);
 
-            doc.autoTable({
-                startY: 30,
-                head: [['Meta (R$)', 'Vendido (R$)', 'Nota', 'Valor Meta (R$)', 'Valor Nota (R$)', 'Total (R$)']],
-                body: [[document.getElementById('meta').value, document.getElementById('vendas').value, document.getElementById('nota').value, `R$ ${valorMeta.toFixed(2)}`, `R$ ${valorNota.toFixed(2)}`, `R$ ${valorFinal.toFixed(2)}`]]
-            });
+            // Criando caixa no PDF
+            doc.setFillColor(230, 230, 230);
+            doc.roundedRect(15, 30, 180, 40, 5, 5, 'F');
+            doc.setTextColor(0);
+            doc.text(`Meta: R$ ${document.getElementById('meta').value}`, 20, 40);
+            doc.text(`Vendido: R$ ${document.getElementById('vendas').value}`, 20, 50);
+            doc.text(`Nota do Consumidor: ${document.getElementById('nota').value}`, 20, 60);
+            doc.text(`Remuneração Total: R$ ${valorFinal.toFixed(2)}`, 20, 70);
 
             doc.save("relatorio-remuneracao.pdf");
         }
