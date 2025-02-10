@@ -168,14 +168,21 @@
             doc.setFont("helvetica", "bold");
             doc.text("Relatório de Remuneração Variável", 20, 20);
 
-            // Criando caixa no PDF
-            doc.setFillColor(230, 230, 230);
-            doc.roundedRect(15, 30, 180, 40, 5, 5, 'F');
-            doc.setTextColor(0);
-            doc.text(`Meta: R$ ${document.getElementById('meta').value}`, 20, 40);
-            doc.text(`Vendido: R$ ${document.getElementById('vendas').value}`, 20, 50);
-            doc.text(`Nota do Consumidor: ${document.getElementById('nota').value}`, 20, 60);
-            doc.text(`Remuneração Total: R$ ${valorFinal.toFixed(2)}`, 20, 70);
+            // Criando caixas para cada informação
+            const yStart = 40;
+            const boxHeight = 15;
+
+            doc.setFillColor(200, 220, 255);
+            doc.roundedRect(15, yStart, 180, boxHeight, 5, 5, 'F');
+            doc.text(`Meta: R$ ${document.getElementById('meta').value}`, 20, yStart + 10);
+
+            doc.setFillColor(240, 240, 240);
+            doc.roundedRect(15, yStart + 20, 180, boxHeight, 5, 5, 'F');
+            doc.text(`Vendido: R$ ${document.getElementById('vendas').value}`, 20, yStart + 30);
+
+            doc.setFillColor(255, 230, 200);
+            doc.roundedRect(15, yStart + 40, 180, boxHeight, 5, 5, 'F');
+            doc.text(`Remuneração Total: R$ ${valorFinal.toFixed(2)}`, 20, yStart + 50);
 
             doc.save("relatorio-remuneracao.pdf");
         }
